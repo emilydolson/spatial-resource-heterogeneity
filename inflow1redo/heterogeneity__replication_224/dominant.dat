@@ -1,0 +1,30 @@
+# Avida Dominant Data
+# Wed Feb 19 14:36:58 2014
+#  1: Update
+#  2: Average Merit of the Dominant Genotype
+#  3: Average Gestation Time of the Dominant Genotype
+#  4: Average Fitness of the Dominant Genotype
+#  5: Repro Rate?
+#  6: Size of Dominant Genotype
+#  7: Copied Size of Dominant Genotype
+#  8: Executed Size of Dominant Genotype
+#  9: Abundance of Dominant Genotype
+# 10: Number of Births
+# 11: Number of Dominant Breed True?
+# 12: Dominant Gene Depth
+# 13: Dominant Breed In
+# 14: Max Fitness?
+# 15: Genotype ID of Dominant Genotype
+# 16: Name of the Dominant Genotype
+
+0 0 0 0 0 50 0 0 3844 0 0 0 0 0 1 050-aaaaa 
+1000 49 139 0.352518 0.00719424 52 52 49 35 9 7 6 0 0.418033 74533 052-aacfx 
+2000 50 119 0.420168 0.00840336 53 53 50 25 4 3 16 0 0.452991 192615 053-aaemv 
+3000 51 107 0.476636 0.00934579 54 54 51 39 12 12 26 0 0.477876 328262 054-aafoy 
+4000 53 115 0.46087 0.00869565 55 55 53 31 3 3 35 0 0.54299 457869 055-aaivp 
+5000 50 107 0.46729 0.00934579 53 53.0072 50 36 7 6 38 0 0.487309 604367 053-aanxh 
+6000 52 114 0.45614 0.00877193 55 55 52 37 3 3 52 0 0.501456 733518 055-aasrp 
+7000 54 117 0.461538 0.00854701 57 57 54 27 4 3 69 0 0.531279 891921 057-aaetp 
+8000 54 115 0.469565 0.00869565 56 56 54 33 4 3 76 0 0.50728 1028026 056-aavzj 
+9000 56 121 0.46281 0.00826446 58 58 56 22 4 2 86 0 0.494525 1114667 058-aackv 
+10000 56 122 0.459016 0.00819672 58 58 56 39 8 8 98 0 0.492907 1264875 058-aadra 
