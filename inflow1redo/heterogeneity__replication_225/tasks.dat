@@ -1,0 +1,26 @@
+# Avida tasks data
+# Wed Feb 19 14:36:58 2014
+# First column gives the current update, next columns give the number
+# of organisms that have the particular task as a component of their merit
+#  1: Update
+#  2: Not
+#  3: Nand
+#  4: And
+#  5: OrNot
+#  6: Or
+#  7: AndNot
+#  8: Nor
+#  9: Xor
+# 10: Equals
+
+0 0 0 0 0 0 0 0 0 0 
+1000 0 0 0 0 0 0 0 0 0 
+2000 0 0 0 0 0 0 0 0 0 
+3000 11 3 0 0 0 0 0 0 0 
+4000 37 0 0 0 0 0 0 0 0 
+5000 0 0 0 0 0 0 0 0 0 
+6000 0 0 0 0 0 0 0 0 0 
+7000 3 45 0 0 0 0 0 0 0 
+8000 41 85 0 0 0 0 0 0 0 
+9000 91 147 0 94 0 0 0 0 0 
+10000 160 214 59 105 0 0 0 0 0 
