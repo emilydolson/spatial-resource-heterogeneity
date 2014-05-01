@@ -78,6 +78,7 @@ def main():
     outfile = open(args.outfile, "w")
   
     dist = (args.worldSize+1)/(args.patchesPerSide+1)
+    #modDist = (args.worldSize+1)%(args.patchesPerSide+1)
     
     anchors = []
     if args.randAnchors:
@@ -103,6 +104,7 @@ def main():
 
     random.shuffle(randResources)
 
+    print len(anchors), len(randResources)
     for i in range(len(anchors)):
         outfile.write(genGradient(randResources[i], args.inflow, args.patchRadius, anchors[i]))
     
@@ -132,7 +134,7 @@ def main():
     outfile.write("# Entropy: " + str(ent))
 
     outfile.close()
-    #graphEntropyVsDistance(25, randResources)
+    graphEntropyVsDistance(14, randResources)
     #graphEntropyVsRadius(randResources, anchors)
 
 def genTwoCircles():
@@ -267,10 +269,10 @@ def graphEntropyVsDistance(radius, resList):
     plt.ylabel("Entropy")
     results = []
     errs = []
-    for i in range(60):
+    for i in range(30):
         ents = []
         anchors = calcTightAnchors(i, args.patchesPerSide)
-        for j in range(2):
+        for j in range(30):
             random.shuffle(resList)
             ents.append(calcEntropy(resList, anchors, radius, False))
         entAvg = float(sum(ents))/len(ents)
@@ -278,7 +280,7 @@ def graphEntropyVsDistance(radius, resList):
         errs.append(stats.sem(ents))
 
     plt.errorbar(range(len(results)), results, yerr=errs)
-    plt.savefig("entropyvsdistance_radius" + str(radius)+ "_worldsize199.png")
+    plt.savefig("entropyvsdistance_radius" + str(radius)+ "_worldsize115.eps")
 
 def graphEntropyVsRadius(resList, anchors):
 
