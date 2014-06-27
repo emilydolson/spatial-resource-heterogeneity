@@ -23,6 +23,12 @@ parser.add_argument("--backgroundOff", action="store_true", help="Don't put any 
 parser.add_argument("--unlimitedEQU", action="store_true", help="Don't limit EQU (included for backwards compatability)")
 parser.add_argument("--twoCircles", action="store_true", help="Triggers twocircles mode, which generates a set of environment files designed for the two circle overlaps experiments.")
 parser.add_argument("--randAnchors", action="store_true", help="Generates random anchor points")
+parser.add_argument("--graphMode", action="store_true", help="Do simulation rather than generate environment file.")
+parser.add_argument("--xvar", default="distance", type=str, help = "X variable for graph mode")
+parser.add_argument("--yvar", default="entropy", type=str, help = "Y variable for graph mode")
+parser.add_argument("--stepSize", default=1, type=int, help = "Step size for graph mode")
+parser.add_argument("--reps", default=30, type=int, help = "Replications per step for graph mode")
+parser.add_argument("--upLim", default=30, type=int, help = "Upper limit of range for graph mode")
 
 class args(object):
     pass
@@ -48,16 +54,15 @@ taskValDict = {"not":1.0,
                "xor":4.0,
                "equ":5.0} #rewards for each task
 
-
-
 def main():
 
-    mainParser = argparse.ArgumentParser(parents=[parser])
+    #Parse arguments, expect positional arguments if being run as
+    #standalone program rather than library
 
+    mainParser = argparse.ArgumentParser(parents=[parser])
     mainParser.add_argument("outfile")
     mainParser.add_argument("randomSeed", default=0, type=int, help="The random seed to use.")
     mainParser.add_argument("patchRadius", default=5, type=int, help="Radius of resource patches")
-
     mainParser.parse_args(namespace=args)
     random.seed(args.randomSeed)
 
@@ -74,37 +79,28 @@ def main():
         genTwoCircles()
         print "Success!"
         exit(0)
+
+    if args.graphMode:
+        #graphRichnessVsDistance(14, genRandResources())
+        graphRichnessVsRadius(genRandResources(), calcEvenAnchors())
     
     outfile = open(args.outfile, "w")
-  
-    dist = (args.worldSize+1)/(args.patchesPerSide+1)
-    #modDist = (args.worldSize+1)%(args.patchesPerSide+1)
+
+    print "Generating an environment with random seed " + str(args.randomSeed) + " and radius " + str(args.patchRadius) + ". Writing to", args.outfile
     
+    #Generate anchors based on configuration setting
     anchors = []
-    if args.randAnchors:
+    if args.randAnchors: #random anchor placement
         anchors = calcRandomAnchors()
-    elif args.distance == None:
-        for i in range(dist-1, args.worldSize, dist):
-            for j in range(dist-1, args.worldSize, dist):
-                anchors.append((i,j))
-    else:
+    elif args.distance == None: #Evenly spaced anchor points
+        anchors = calcEvenAnchors()
+    else: #Anchors placed a specific distance from each other
         anchors = calcTightAnchors(args.distance, args.patchesPerSide)
 
-    print anchors
-    randResources = []
-    nEach = args.patchesPerSide*args.patchesPerSide / len(gradResources)
-    extras = args.patchesPerSide*args.patchesPerSide % len(gradResources)
-    for i in range(nEach):
-        for res in gradResources:
-            randResources.append(res + str(i))
+    #Generate random resource order
+    randResources = genRandResources()
 
-    additional = random.sample(gradResources, extras)
-    for res in additional:
-        randResources.append(res + str(nEach))
-
-    random.shuffle(randResources)
-
-    print len(anchors), len(randResources)
+    #Write confiugration to specifed output file
     for i in range(len(anchors)):
         outfile.write(genGradient(randResources[i], args.inflow, args.patchRadius, anchors[i]))
     
@@ -129,13 +125,41 @@ def main():
             outfile.write(genReaction(res+"b", 1))
 
         outfile.write("\n")
-    ent = calcEntropy(randResources, anchors, args.patchRadius)
 
+    #Record entropy for easy reference in the future
+    ent = calcEntropy(randResources, anchors, args.patchRadius)
     outfile.write("# Entropy: " + str(ent))
 
     outfile.close()
-    graphEntropyVsDistance(14, randResources)
-    #graphEntropyVsRadius(randResources, anchors)
+
+def calcEvenAnchors():
+    """
+    Calculates anchor points evenly spaced across the world, given user-specified parameters.
+    """
+    anchors = []
+    dist = (args.worldSize+1)/(args.patchesPerSide+1)
+    for i in range(dist-1, args.worldSize, dist):
+        for j in range(dist-1, args.worldSize, dist):
+            anchors.append((i,j))
+    return anchors
+
+def genRandResources():
+    """
+    Generates a list of the appropriate length containing a roughly equal number of all resources in a random order
+    """
+    randResources = []
+    nEach = args.patchesPerSide*args.patchesPerSide / len(gradResources)
+    extras = args.patchesPerSide*args.patchesPerSide % len(gradResources)
+    for i in range(nEach):
+        for res in gradResources:
+            randResources.append(res + str(i))
+
+    additional = random.sample(gradResources, extras)
+    for res in additional:
+        randResources.append(res + str(nEach))
+
+    random.shuffle(randResources)
+    return randResources
 
 def genTwoCircles():
     """
@@ -161,6 +185,10 @@ def genTwoCircles():
             outfile.close()            
 
 def calcRandomAnchors():
+    """
+    Generates a list of random anchor points such that all circles will fit in the world, given the specified radius and worldsize.
+    The number of anchors to generate is determined by squaring the specified number of patches per side.
+    """
     anchors = []
     rng = (args.patchRadius, args.worldSize - args.patchRadius)
     for i in range(args.patchesPerSide*args.patchesPerSide):
@@ -169,6 +197,10 @@ def calcRandomAnchors():
     return anchors
 
 def calcTightAnchors(d, patches):
+    """
+    Recursively generates the number of anchor points specified in the patches argument, such that all patches are d cells away
+    from their nearest neighbors.
+    """
     centerPoint = (int(args.worldSize/2), int(args.worldSize/2))
     anchors = []
     if patches == 0:
@@ -226,13 +258,28 @@ def calcTightAnchors(d, patches):
 
 
 def genGradient(resource, inflow, radius, loc):
-    return "GRADIENT_RESOURCE " + str(resource) + ":height=" + str(radius) + ":plateau=" + str(inflow) +":spread=" + str(radius-1) + ":updatestep=1000000:peakx=" + str(loc[0]) + ":peaky=" + str(loc[1]) + ":plateau_inflow=" + str(inflow) + ":initial=" + str(inflow) + "\n"
+    """
+    Returns a line of text to add to an environment file, initializing a gradient resource with the specified 
+    name (string), inflow(int), radius(int), and location (tuple of ints)
+    """
+    return "GRADIENT_RESOURCE " + str(resource) + ":height=" + str(radius) + ":plateau=" + str(inflow) +":spread=" + str(radius-1) + ":common=1:updatestep=1000000:peakx=" + str(loc[0]) + ":peaky=" + str(loc[1]) + ":plateau_inflow=" + str(inflow) + ":initial=" + str(inflow) + "\n"
 
 def genRes(resource, inflow, outflow):
+    """
+    Returns a line of text to add to an environment file, initializing a standard resource with the specified 
+    name (string), inflow(int), and outflow(int)
+    """
     return "RESOURCE " + resource + ":inflow=" + str(inflow) + \
                 ":outflow=" + str(outflow) + "\n"
 
 def genReaction(resource, depletable=0):
+    """
+    Returns a line of text to add to an environment file, initializing a reaction that uses the resource specified in the first
+    argument to perform the associated task (resource names are expected to be of the form "resTASK#" where "TASK" corresponds
+    to the task the resource is associated with and # is an integer uniquely identifying that specific gradient resource. For 
+    example, the first AND resource would be named resAND0). An optional second argument (int) specifies whether or not the reaction
+    should deplete the resource (by default it will not).
+    """
     task = resource[3:-1].lower()
     name = resource[3:]
     return "REACTION " + name + " " + task + " process:resource=" + \
@@ -241,57 +288,103 @@ def genReaction(resource, depletable=0):
             ":depletable=" + str(int(depletable)) + " requisite:max_count=" \
             + str(maxCount) + "\n"
 
-def graphEntropyVsDistanceVsRadius(resList):
-    fig = plt.figure()
-    ax = fig.gca(projection="3d")
-    plt.xlabel("Distance")
-    plt.ylabel("Radius")
-    plt.zlabel("Entropy")
+
+def arbitraryGraph():
+    plt.xlabel(args.xvar)
+    plt.ylabel(args.yvar)
     results = []
     errs = []
-    for i in range(0, 60, 5):
-        for j in range(0, 30, 5):
-            ents = []
-            anchors = calcTightAnchors(j, args.patchesPerSide)
-            for k in range(30):
-                random.shuffle(resList)
-                ents.append(calcEntropy(resList, anchors, i))
-            entAvg = sum(ents)/len(ents)
-            results.append(entAvg)
-            errs.append(np.sem(ents))
+    for i in range(0, args.upLim, args.stepSize):
+        pass
 
-    plt.errorbar(results, yerr=errs)
-    plt.savefig("entropyvsdistance.png")
+def graphRichnessVsRadius(resList, anchors):
+    """
+    Generates a graph of the average entropy for an environment generated with circles of each radius between 0 and 60 placed at the
+    specfied anchor points (list of tuples of ints) using resources from the given list (list of strings indicating resource names 
+    with numeric characters appended to uniquely identify each gradient). Each radius is evaluated by 
+    generating 30 random assignments of the specified resources to the given anchor points and calculating the entropy.
+    """
+    plt.xlabel("Patch Radius")
+    plt.ylabel("Richness")
+    results = []
+    errs = []
+    for i in range(60): #Loop over radii
+        ents = []
+        for j in range(30): #Do 30 replicates at each radius
+            random.shuffle(resList) #randomize resource placement
+            ents.append(patchRichness(resList, anchors, i))
+        entAvg = float(sum(ents))/len(ents)
+        results.append(entAvg)
+        errs.append(stats.sem(ents))
 
-def graphEntropyVsDistance(radius, resList):
+    plt.errorbar(range(len(results)), results, yerr=errs)
+    plt.savefig("richnessvsradius.png")
 
+def graphRichnessVsDistance(radius, resList):
+    """
+    Generates a graph of the average entropy for an environment generated at each distance (where a distance refers to the number 
+    of cells between the anchor points of each pair of neighboring circles) for the specified radius (int) and list of resources to 
+    include in the environment (list of strings indicating resource names with numeric characters appended to uniquely identify each
+    gradient). Each distance between zero and 30 is evaluated by generating 30 random assignments of the specified resources to
+    appropriate anchor points for the distance and calculating the entropy.
+    """
     plt.xlabel("Distance")
     plt.ylabel("Entropy")
     results = []
     errs = []
-    for i in range(30):
+    for i in range(30): #Loop over distances
         ents = []
         anchors = calcTightAnchors(i, args.patchesPerSide)
-        for j in range(30):
-            random.shuffle(resList)
+        for j in range(30): #run 30 replicates
+            random.shuffle(resList) #rearrange resources
+            ents.append(patchRichness(resList, anchors, radius))
+        entAvg = float(sum(ents))/len(ents)
+        results.append(entAvg)
+        errs.append(stats.sem(ents))
+
+    plt.errorbar(range(len(results)), results, yerr=errs)
+    plt.savefig("richnessvsdistance_radius" + str(radius)+ ".eps")
+
+def graphEntropyVsDistance(radius, resList):
+    """
+    Generates a graph of the average entropy for an environment generated at each distance (where a distance refers to the number 
+    of cells between the anchor points of each pair of neighboring circles) for the specified radius (int) and list of resources to 
+    include in the environment (list of strings indicating resource names with numeric characters appended to uniquely identify each
+    gradient). Each distance between zero and 30 is evaluated by generating 30 random assignments of the specified resources to
+    appropriate anchor points for the distance and calculating the entropy.
+    """
+    plt.xlabel("Distance")
+    plt.ylabel("Entropy")
+    results = []
+    errs = []
+    for i in range(30): #Loop over distances
+        ents = []
+        anchors = calcTightAnchors(i, args.patchesPerSide)
+        for j in range(30): #run 30 replicates
+            random.shuffle(resList) #rearrange resources
             ents.append(calcEntropy(resList, anchors, radius, False))
         entAvg = float(sum(ents))/len(ents)
         results.append(entAvg)
         errs.append(stats.sem(ents))
 
     plt.errorbar(range(len(results)), results, yerr=errs)
-    plt.savefig("entropyvsdistance_radius" + str(radius)+ "_worldsize115.eps")
+    plt.savefig("entropyvsdistance_radius" + str(radius)+ ".eps")
 
 def graphEntropyVsRadius(resList, anchors):
-
+    """
+    Generates a graph of the average entropy for an environment generated with circles of each radius between 0 and 60 placed at the
+    specfied anchor points (list of tuples of ints) using resources from the given list (list of strings indicating resource names 
+    with numeric characters appended to uniquely identify each gradient). Each radius is evaluated by 
+    generating 30 random assignments of the specified resources to the given anchor points and calculating the entropy.
+    """
     plt.xlabel("Patch Radius")
     plt.ylabel("Entropy")
     results = []
     errs = []
-    for i in range(60):
+    for i in range(60): #Loop over radii
         ents = []
-        for j in range(30):
-            random.shuffle(resList)
+        for j in range(30): #Do 30 replicates at each radius
+            random.shuffle(resList) #randomize resource placement
             ents.append(calcEntropy(resList, anchors, i, True))
         entAvg = float(sum(ents))/len(ents)
         results.append(entAvg)
@@ -300,24 +393,49 @@ def graphEntropyVsRadius(resList, anchors):
     plt.errorbar(range(len(results)), results, yerr=errs)
     plt.savefig("entropyvsradius_errors_nodesert.png")
 
-def calcEntropy(resList, anchors, rad, excludeDesert=False):
+def makeNicheGrid(resList, anchors, rad):
+    """
+    Helper function for spatial heterogeneity calculations
+    """
     world = []
     for i in range(args.worldSize):
         world.append([])
         for j in range(args.worldSize):
             world[i].append(set())
 
+    #Fill in data on niches present in each cell of the world
     for i in range(args.worldSize):
         for j in range(args.worldSize):
             for k in range(len(anchors)):
                 if (dist((i,j), anchors[k])) <= rad-1:
                     world[i][j].add(resList[k][3:-1])
+    return world
+
+def calcEntropy(resList, anchors, rad, excludeDesert=False):
+    """
+    Calculate the Shannon entropy of a given environment, treating each niche (where niches are defined by regions in which
+    different sets of resources are rewarded) as a category. The environment is specified with the following inputs:
     
-    entropy = 0
+    resList - a list of strings of resource names. These names are expected to start with the letters "res" and end with numbers
+    differentiating different copies of the same task. The middle characters denote the task being rewarded. For example, the first
+    AND resource would be called resAND0.
+
+    anchors - a list of tuples of ints denoting x,y anchor points in the world for each resource.
+
+    radius - an int indicating the radius of the resource patches in the world.
+
+    excludeDesert - an optional argument which defaults to False. If True is specific, niches in which no tasks are rewarded
+    will not be considered in the calculation.
+    """
+
+    #Initialize list of list of sets to record which niches are where
+    world = makeNicheGrid(resList, anchors, rad)
+    
+    #loop through world, counting frequency of each niche
     niches = {}
     for i in range(args.worldSize):
         for j in range(args.worldSize):
-            if niches.has_key(frozenset(world[i][j])):
+            if niches.has_key(frozenset(world[i][j])): #use frozensets because they are hashable
                 niches[frozenset(world[i][j])] += 1
             else:
                 niches[frozenset(world[i][j])] = 1
@@ -325,20 +443,36 @@ def calcEntropy(resList, anchors, rad, excludeDesert=False):
     if excludeDesert and niches.has_key(frozenset([])):
         del niches[frozenset([])]
 
-    total = 0.0
-    for key in niches.keys():
-        total += niches[key]
+    #Calculate entropy
+    return entropy(niches)
 
-    for key in niches.keys():
-        entropy += niches[key]/total * log(1.0/(niches[key]/total), 2)
-    
+def entropy(dictionary):
+    """
+    Helper function for entropy calculations.
+    Takes a frequency dictionary and calculates entropy of the keys.
+    """
+    total = 0.0
+    entropy = 0
+    for key in dictionary.keys():
+        total += dictionary[key]
+
+    for key in dictionary.keys():
+        entropy += dictionary[key]/total * log(1.0/(dictionary[key]/total), 2)
     return entropy
 
 def nTasks(decNum):
+    """
+    Takes a decimal number as input and returns the number of ones in the binary representation.
+    This translates to the number of tasks being done by an organism with a phenotype represented as a decimal number.
+    """
     bitstring = bin(int(decNum))[2:]
     return bitstring.count("1")
 
 def makeNTasksImage(filename):
+    """
+    Load a grid_task style file (specified in filename) and visualize in a heat map such that cells with phenotypes
+    that perform more tasks are cooler colors.
+    """
     data = loadGridData(filename, "nTasks")
     grid = []
 
@@ -360,6 +494,10 @@ def makeNTasksImage(filename):
     return grid
 
 def loadGridData(filename, mode):
+    """
+    Helper function to load data from grid_task files. Filename indicates file to read from
+    and mode (either "species" or "nTasks") indicates how to formulate the data.
+    """
     infile = open(filename)
     data = []
     for line in infile:
@@ -367,10 +505,16 @@ def loadGridData(filename, mode):
             data.append([nTasks(s) for s in line.split()])
         elif mode == "species":
             data.append([((log(float(s)+1, 2)/11)) for s in line.split()])
+        elif mode == "raw":
+            data.append(line.split())
     infile.close()
     return data
 
 def loadAggregateGridData(filelist, mode):
+    """
+    Helper function to load data from multiple grid_task files. Filename indicates file to read from
+    and mode (either "species" or "nTasks") indicates how to formulate the data.
+    """
     data = []
     for i in range(args.worldSize):
         data.append([])
@@ -415,6 +559,9 @@ def loadAggregateGridData(filelist, mode):
     return data
 
 def colorGrid(data):
+    """
+    Loads specified data into an ipython blocks grid to create a heat map of phenotypic complexity and location.
+    """
     grid = BlockGrid(args.worldSize, args.worldSize)
     for row in range(len(data)):
         for col in range(len(data[row])):
@@ -436,14 +583,26 @@ def colorGrid(data):
     return grid, data
 
 def makeMostCommonGrid(filelist, mode="species"):
+    """
+    Makes a heat map of the most common phenotypes in each cell across all files specified in filelist (list of strings).
+    Mode indicates whether to color by phenotype or number of tasks performed.
+    """
     data = loadAggregateGridData(filelist, "mostcommon-"+mode)
     return colorGrid(data)
 
 def makeNTasksGrid(filename):
+    """
+    Makes a heat map of the most common phenotypes (by number of tasks performed) in each cell in specified in file (string).
+    """
     data = loadGridData(filename, "nTasks")
     return colorGrid(data)
 
 def makeAggregateNTasksGrid(filelist, intensify=False):
+    """
+    Makes a heat map of the most common phenotypes in each cell (by number of tasks performed) across all files specified in 
+    filelist (list of strings).
+    Setting intensify to true multiplies all colors by a factor to make different simple phenotypes stand out more.
+    """
     if intensify:
         data = loadAggregateGridData(filelist, "nTasks-intensify")
     else:
@@ -451,14 +610,25 @@ def makeAggregateNTasksGrid(filelist, intensify=False):
     return colorGrid(data)
 
 def makeSpeciesGrid(filename):
+    """
+    Makes a heat map of the most common phenotypes (by phenotype) in each cell in specified in file (string).
+    """
     data = loadGridData(filename, "species")
     return colorGrid(data)
 
 def makeAggregateSpeciesGrid(filelist):
+    """
+    Makes a heat map of the most common phenotypes in each cell (by phenotype) across all files specified in 
+    filelist (list of strings).
+    """
     data = loadAggregateGridData(filelist, "species")
     return colorGrid(data)
     
 def calcGrid(resList, anchors, rad):
+    """
+    Makes a visualization using ipython blocks of the locations of each resource in resList in a world. Anchors is a list of tuples
+    denoting where to anchor the circles. Rad is and int indicating the radius of the circles.
+    """
     world = []
     grid = BlockGrid(args.worldSize, args.worldSize)
     for i in range(args.worldSize):
@@ -495,6 +665,12 @@ def calcGrid(resList, anchors, rad):
     return grid
 
 def calcNResGrid(resList, anchors, rad):
+    """
+    Makes a visualization using ipython blocks of the number resources in each location in a world. 
+    resList is a list of strings indicating which resources to place in the world.
+    Anchors is a list of tuples denoting where to anchor the circles. 
+    Rad is an int indicating the radius of the circles.
+    """
     world = []
     grid = BlockGrid(args.worldSize, args.worldSize)
     for i in range(args.worldSize):
@@ -529,7 +705,64 @@ def calcNResGrid(resList, anchors, rad):
     return grid
 
 def dist(p1, p2):
+    """
+    Returns the distance between the two given tuples.
+    """
     return sqrt((p1[0]-p2[0])**2 + (p1[1]-p2[1])**2)
+
+def patchRichness(resList, anchors, rad):
+    world = makeNicheGrid(resList, anchors, rad)
+    niches = {}
+    for i in range(args.worldSize):
+        for j in range(args.worldSize):
+            if niches.has_key(frozenset(world[i][j])): #use frozensets because they are hashable
+                niches[frozenset(world[i][j])] += 1
+            else:
+                niches[frozenset(world[i][j])] = 1
+
+    return len(niches.keys())
+
+def findEdges(resList, anchors, rad):
+    world = makeNicheGrid(resList, anchors, rad)
+    edgecount = 0
+    for i in range(args.worldSize):
+        for j in range(args.worldSize):
+            if i >= 1:
+                if world[i][j] != world[i-1][j]:
+                    edgecount += 1
+                elif j >= 1 and world[i][j] != world[i-1][j-1]:
+                    edgecount += 1
+                elif j < args.worldSize - 1 and world[i][j] != world[i-1][j+1]:
+                    edgecount += 1
+            elif j >= 1:
+                if world[i][j] != world[i][j-1]:
+                    edgecount += 1
+                elif i < args.worldSize - 1 and world[i][j] !=  world[i+1][j-1]:
+                    edgecount += 1
+            elif i < args.worldSize - 1:
+                if world[i][j] != world[i+1][j]:
+                    edgecount += 1
+                elif j < args.worldSize - 1 and world[i][j] != world[i+1][j+1]:
+                    edgecount += 1
+            elif j < args.worldSize - 1:
+                if world[i][j] != world[i][j+1]:
+                    edgecount += 1
+    return edgecount
+
+def sqrtShannonEntropy(filename):
+    data = loadGridData(filename, "raw")
+    phenotypes = {}
+    for r in data:
+        for c in r:
+            if phenotypes.has_key(c):
+                phenotypes[c] += 1
+            else:
+                phenotypes[c] = 1
+
+    for key in phenotypes.keys():
+        phenotypes[key] = sqrt(phenotypes[key])
+
+    return entropy(phenotypes)
 
 if __name__ == "__main__":
     main()
