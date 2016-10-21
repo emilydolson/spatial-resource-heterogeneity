@@ -1,0 +1,98 @@
+#!/bin/bash -login
+
+#PBS -l walltime=14:00:00
+#PBS -l nodes=1:ppn=1
+#PBS -l mem=4gb
+#PBS -N d21common
+#PBS -t 70203-70203
+cd ~/avida-stable/avida-2.12.4-src/cbuild/work
+
+#./genHeterogenousEnvironment.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 24
+#./genHeterogenousEnvironment.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 30
+
+#./genHeterogenousEnvironment.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 10 12
+#./avida -c heterogeneity-experiment.cfg -set WORLD_X 100 -set WORLD_Y 100 -set DATA_DIR ~/resource-heterogeneity/experiment/world100/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/max_background_limEqu/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/rad24/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/radius30/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+#./genHeterogenousEnvironment.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 6
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/radius6_inflow100/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+#./genHeterogenousEnvironment.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 10 8
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/distance8/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+#./genHeterogenousEnvironment.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 8 8
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/distance8_radius8/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+#./genHeterogenousEnvironment_desert.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 30
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/radius30_infinite_emptydesert/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+#./genHeterogenousEnvironment2.0.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 8 --distance 5 --infinite
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/distance5_radius8_infinite/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+#./genHeterogenousEnvironment2.0.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 10 --distance 12 --worldSize 100
+#./avida -c heterogeneity-experiment.cfg -set WORLD_X 100 -set WORLD_Y 100 -set DATA_DIR ~/resource-heterogeneity/experiment/world100_inflow100_radius10_distance12_popcap3481/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg -set POPULATION_CAP 3481
+
+#./genHeterogenousEnvironment2.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 14 --worldSize 100 --randAnchors 
+#./avida -c heterogeneity-experiment.cfg -set WORLD_X 100 -set WORLD_Y 100 -set DATA_DIR ~/resource-heterogeneity/experiment/randomAnchors_16circles/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+#./genHeterogenousEnvironment2.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 14 --distance 10 --inflow 100 --backgroundOff --worldSize 115 
+#./avida -c heterogeneity-experiment.cfg -set WORLD_X 115 -set WORLD_Y 115 -set DATA_DIR ~/resource-heterogeneity/experiment/overlap_radius14_distance10/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+#./genHeterogenousEnvironment2.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 14 --distance 14 --inflow 100 --backgroundOff --worldSize 115 
+#./avida -c heterogeneity-experiment.cfg -set WORLD_X 115 -set WORLD_Y 115 -set DATA_DIR ~/resource-heterogeneity/experiment/overlap_radius14_distance14/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+#./genHeterogenousEnvironment2.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 14 --distance 17 --inflow 100 --backgroundOff --worldSize 115 
+#./avida -c heterogeneity-experiment.cfg -set WORLD_X 115 -set WORLD_Y 115 -set DATA_DIR ~/resource-heterogeneity/experiment/overlap_radius14_distance17/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+#./genHeterogenousEnvironment2.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 6 --inflow 100 --backgroundOff
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/radius6_distance12_common/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+#./genHeterogenousEnvironment2.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 8 --inflow 100 --backgroundOff
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/radius8_distance12_common/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+#./genHeterogenousEnvironment2.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 10 --inflow 100 --backgroundOff
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/radius10_distance12_common/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+#./genHeterogenousEnvironment2.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 15 --inflow 100 --backgroundOff
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/radius15_distance12_common/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+#./genHeterogenousEnvironment2.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 20 --inflow 100 --backgroundOff
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/radius20_distance12_common/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+#./genHeterogenousEnvironment2.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 36 --inflow 100
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/inflow100_radius36_commonresources/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+#./genHeterogenousEnvironment2.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 15 --inflow 10
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/inflow10_radius15_common/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+#./genHeterogenousEnvironment2.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 14 --inflow 100 --distance 0
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/overlaps_inflow100_distance00_common/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+#./genHeterogenousEnvironment2.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 14 --inflow 100 --distance 3
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/overlaps_inflow100_distance03_common/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+#./genHeterogenousEnvironment2.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 14 --inflow 100 --distance 7
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/overlaps_inflow100_distance07_common/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+#./genHeterogenousEnvironment2.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 14 --inflow 100 --distance 10
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/overlaps_inflow100_distance10_common/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+#./genHeterogenousEnvironment2.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 14 --inflow 100 --distance 14
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/overlaps_inflow100_distance14_common/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+#./genHeterogenousEnvironment2.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 14 --inflow 100 --distance 17
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/overlaps_inflow100_distance17_common/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+./genHeterogenousEnvironment2.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 14 --inflow 100 --distance 21
+./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/overlaps_inflow100_distance21_common/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+#./genHeterogenousEnvironment2.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 14 --inflow 100 --distance 25
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/overlaps_inflow100_distance25_common/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg
+
+#./genHeterogenousEnvironment2.py env${PBS_ARRAYID}.cfg ${PBS_ARRAYID} 14 --inflow 100 --distance 29
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/overlaps_inflow100_distance29_common/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE env${PBS_ARRAYID}.cfg

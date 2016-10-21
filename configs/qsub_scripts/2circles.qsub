@@ -1,0 +1,89 @@
+#!/bin/bash -login
+
+#PBS -l walltime=24:00:00
+#PBS -l nodes=1:ppn=1
+#PBS -l mem=2gb
+#PBS -N notXorn30
+#PBS -t 3910-3939
+###PBS -t 30900-30929
+cd ~/avida-stable/avida-2.12.4-src/cbuild/work
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXand0/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXand0.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXand14/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXand14.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXorn0/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXorn0.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXorn14/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXorn14.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXorn30/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXorn30.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXor0/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXor0.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXor14/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXor14.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXor30/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXor30.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXandn0/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXandn0.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXandn14/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXandn14.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXandn30/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXandn30.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXnor0/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXnor0.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXnor14/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXnor14.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXnor30/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXnor30.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXxor0/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXxor0.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXxor14/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXxor14.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXxor30/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXxor30.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_orXor30/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE orXor30.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_orXandn0/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE orXandn0.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_orXandn14/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE orXandn14.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_orXandn30/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE orXandn30.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_orXnor0/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE orXnor0.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_orXnor14/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE orXnor14.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_orXnor30/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE orXnor30.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_orXxor0/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE orXxor0.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_orXxor14/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE orXxor14.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_orXxor30/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE orXxor30.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXorn21/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXorn21.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXorn22/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXorn22.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXorn23/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXorn23.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXorn24/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXorn24.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXorn24_ecology/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXorn24.cfg -set EVENTS_FILE ecology_events.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXorn23_ecology/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXorn23.cfg -set EVENTS_FILE ecology_events.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXorn22_ecology/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXorn22.cfg -set EVENT_FILE ecology_events.cfg
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXorn21_ecology/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXorn21.cfg -set EVENT_FILE heterogeneity-experiment-events-ecology.cfg 
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXorn22_ecology/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXorn22.cfg -set EVENT_FILE heterogeneity-experiment-events-ecology.cfg 
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXorn23_ecology/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXorn23.cfg -set EVENT_FILE heterogeneity-experiment-events-ecology.cfg 
+
+#./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXorn20_ecology/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE notXorn20.cfg -set EVENT_FILE heterogeneity-experiment-events-ecology.cfg
+ 
+./avida -c heterogeneity-experiment.cfg -set DATA_DIR ~/resource-heterogeneity/experiment/2circles_notXorn30_ecology/heterogeneity_replication_${PBS_ARRAYID} -set RANDOM_SEED ${PBS_ARRAYID} -set ENVIRONMENT_FILE envFiles/notXorn30.cfg -set EVENT_FILE heterogeneity-experiment-events-ecology.cfg 
+
+#myqsub next
