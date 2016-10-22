@@ -1,0 +1,8 @@
+notXnand -> 29/30
+natXand -> 11/30
+notXorn -> 30/30
+notXor -> 9/30
+notXandn -> 20/30
+notXnor -> 3/30
+notXxor -> 0/30
+notXequ -> 
