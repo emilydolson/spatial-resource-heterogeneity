@@ -1,0 +1,75 @@
+Updated 5/1/2014
+Emily Dolson, Audra Chaput, Samuel Perez
+Tutorial to replicate CSE 845 Spring 2014  Group E Project: Spatial resource heterogeneity shapes biological diversity and evolutionary potential in digital organisms
+NOTE : All experiments were run using Avida 2.12.4
+
+Table of Contents:
+	Section 1 : List of included supplementary files
+	Section 2: Configuration Files and default settings to use when running Avida
+			a) heterogenetiy-experiment.cfg
+			b) heterogeneity-experiment-events.cfg
+			c) default-heterogeneity.org
+			d) heterogeneity-experiment-events-ecology.cfg
+	Section 3: Generating Spatial Heterogeneity using gradient resources in Avida 
+			a) Generating environment file for changing patch radius experiment
+			b) Generating environment file for changing interpatch distance experiment
+			c) Generating environment file for niche construction experiment
+	Section 4: Using Ipython Notebook with Matplotlib to extract data from files and generate plots
+	Section 5: Vizualizing location of phenotypes in the environment
+
+SECTION 1: Included supplementary files:
+avida config files (heterogeneity-experiment.cfg file,  heterogeneity-experiment-events.cfg, default-heterogeneity.org)
+genHeterogeneousEnvironment2.py
+plottingdata.ipynb
+vizualizertutorial.ipynb
+
+SECTION 2: Configuration Files and default settings to use when running Avida
+	a) heterogeneity-experiment.cfg file (see enclosed) is the configuration file to use when running Avida for this experiment. To note, the only changes from default include setting the mutation rate (COPY_MUT_PROB) 
+		equal to 0.0025, as well as setting the events file to het-exp-events.cfg (see section 2b below) and the environment file (see section 3)
+	
+	b) heterogeneity-experiment-events.cfg file (see enclosed) is the events file to use when running Avida for this experiment. To note, the following important changes from default events.cfg file were made:
+		InjectAll default-heterogeneity.org  command was used to insert the maximum number of the ancestral organisms into the environment (Note a modifed organism was used, see section 2c below)
+		PrintPhenotypeData, DumpTaskGrid, and PrintOrgLocData commands were specified to output datafiles every 1000 updates, in order to generate the tasks.dat, phenotype_count.dat, grid_tasks.dat and other relevant data files (see secition 4)
+		u  100000 Exit command was used to end each experimental evolution trial after 100,000 updates
+		
+	c) default-heterogeneity.org is the organism configuration file each population was seeded with when running Avida for this experiment. To note, it differs from the default Avida organism in that 50 lines of nop-C code were removed from the genome
+
+	d) heterogeneity-experiment-events-ecology.cfg file (see enclosed) is the configuration file to use when running experiments with an additional 100,000 updates during which no mutations can occur (ecology mode). This was used for the niche construction and functional niche siize experiments.	
+
+SECTION 3: Generating Spatial Heterogeneity using gradient resources in Avida
+	For all three following subsections, please see the enclosed genHeterogeneousEnvironment2.py script for more detailed instructions on how to use the script
+	
+	a) To generate environments with 16 even spaced (in a square grid) gradient resource patches with a set patch radius, specify the following when calling the script to run:
+		--distance 12 	 					will set the distance between resource patch anchor points to 12 spaces away (value used in experiment)
+		--inflow 100   						will set the initial  inflow into each gradient resource patch to 100 (value used in experiment)
+		--outflow 0.01  					will set the outflow rate of each gradient resource patch to 0.01 (value used in experiment)
+        --patchesPerSide 4					will set the number of patches per side to 4 (assumes a square grid, ie 4x4=16 total patches) (value used in experiment)
+        --worldSize 59						will set the world to size 59 by 59 (value used in experiment)
+        outfile randomSeed patchRadius	 	replace outfule with the desired file name of the generated environment file, replace randomSeed with the desired the random seed to use, specify the desired patch radius (patch radii 6, 8, 10, 15, 20, 24, 30, 36, 48, or 59 were used in the experiment)
+	
+	b) To generate environments with 16 even spaced (in a square grid) gradient resource patches with a set distance between each patch, specify the following when calling the script to run:
+		--distance  0						will set the distance between resource patch anchor points to 0 spaces away (values used in experiment included 0, 3, 7, 10, 14, 17, 21, 25, or 29)
+		--inflow 100   						will set the initial  inflow into each gradient resource patch to 100 (value used in experiment)
+		--outflow 0.01  					will set the outflow rate of each gradient resource patch to 0.01 (value used in experiment)
+        --patchesPerSide 4					will set the number of patches per side to 4 (assumes a square grid, ie 4x4=16 total patches) (value used in experiment)
+        --worldSize 115						will set the world to size 115 by 115 (value used in experiment)
+        outfile randomSeed 14	 			replace outfule with the desried file name of the generated environment file,  replace randomSeed with the desired the random seed to use, "14" indicates radius 14 patches will be created (value used in this experiment)
+	
+	c) To generate environments with 2 gradient resource patches of particular resources at particular distances away, specify the following when calling the script to run:
+	--twoCircles							puts the script into twoCircles mode, which will generate environment files for all possible pairwise combinations of 												resources
+	outfile randomSeed 14					These default arguments are still necessary but only radius has an effect
+	
+SECTION 4: Using Ipython notebook with matplotlib to generate plots
+	For the following subsection, please see the enclosed plottingdata.ipynb script
+	To create figures which plot average phenotypic diversity and evolutionary potential of EQU task across patch radius or interpatch distance treatments, do the following:
+		1. At the top of the script, specify the path where your datafiles for each replicate population are stored
+		2. For the conditions command, change the list of conditions to reflect the directory (or folder) names for each of your treatments
+		3. Once conditions are specified so that the script can access the datafiles you choose, the script will automatically generate a list of phenotypic Shannon Entropy as well as number of organisms that performed 
+			equals at update 100,000 (or whatever exit update you specified) for each of the replicate populations in every treatment condition specfied.
+		4. The script will then average the list of phenotypic Shannon entropy across all replicates within a given condition, and produce a notched boxplot of average phenotypic entropy vs treatment condition. 
+		5. The script will then also convert the list of number of organsims that performed equals for every replicate to reflect the number of populations in a given treatment condition where atleast 1 organism performed the EQU task
+			and produce a histogram of number of replicate populations that performed EQU task vs treatment condition.
+			
+SECTION 5: Vizualizing location of phenotypes in the environment
+	For the following subsection, please see the enclosed Visualizer Tutorial.ipynb ipython notebook file for a detailed tutorial of the most important visualization techniques.
+		
