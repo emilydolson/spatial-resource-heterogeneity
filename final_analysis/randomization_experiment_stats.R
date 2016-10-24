@@ -313,7 +313,7 @@ meankurtosis.glm <- glm(EQU>0 ~ scaled_preEQUdiv+(scaled_overlap+scaled_kurtosis
 summary(meankurtosis.glm) #Still the same! Great! Also the residual deviance looks okay.
 vcov(meankurtosis.glm)
 
-meanskew.glm <- glm(equ_evolved ~ scaled_preEQUdiv*scaled_overlap*scaled_skew, family=binomial(link="logit"), data=subset(endPoints, endPoints$seed < 50250))
+meanskew.glm <- glm(equ_evolved ~ scaled_preEQUdiv*scaled_overlap*scaled_skew, family=binomial(link="logit"), data=endPoints)
 summary(meanskew.glm) #Looks good!
 #These results are qualitatively similar, but not identical. However, there isn't a logical way to average them together, given that they contain such different variables and contain variables that are colinear with each other.
 vcov(meanskew.glm)
@@ -344,6 +344,9 @@ coefplot(meanskew.glm, varnames=c("intercept", "diversity", "mean", "skew"), mar
 coefplot(meankurtosis.glm, varnames=c("intercept", "diversity", "mean", "kurtosis", "mean*kurtosis"), mar=c(0,5,5,0))
 
 # Since the fit seems pretty equivalent and skew is easier to understand than kurtosis, we'll go with skew.
+
+summary(meanskew.glm)
+confint(meanskew.glm)
 
 # Make sure that overlap*skew is actually capturing all of the information that entropy captures.
 
