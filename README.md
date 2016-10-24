@@ -1,5 +1,7 @@
-resource-heterogeneity
-======================
+Spatial resource heterogeneity increases diversity and evolutionary potential
+=============================================================================
+
+![Image of phenotypes in an example environment](figs/phenotype_niches_11097.png)
 
 This repository contains code, configuration files, data, and analysis scripts for the paper "Spatial resource heterogeneity increases diversity and evolutionary potential" by Emily Dolson, Samuel Perez, Randal Olson, and Charles Ofria.
 
