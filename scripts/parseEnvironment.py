@@ -9,7 +9,7 @@ import scipy.stats as stats
 # Most of this code is now part of the avidaspatial Python library.
 
 def main():
-    envs = parse_environment_files("environmentFiles/env*.cfg")
+    envs = parse_environment_files("../configs/environmentFiles/env*.cfg")
     outfile = open("../final_analysis/ents.csv", "w")
     outfile.write("seed, ent, functional_ent, overlap, variance, kurtosis, skew, resources\n")
     for key in envs.keys():

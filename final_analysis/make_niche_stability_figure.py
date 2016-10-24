@@ -4,9 +4,9 @@ import matplotlib.patches as mpatches
 import glob
 import seaborn as sns
 
-d0 = glob.glob("/media/emily/hdd/resource-heterogeneity/experiment/2circles_notXorn0/*/grid_task.100000.dat")
-d14 = glob.glob("/media/emily/hdd/resource-heterogeneity/experiment/2circles_notXorn14/*/grid_task.100000.dat")
-d30 = glob.glob("/media/emily/hdd/resource-heterogeneity/experiment/2circles_notXorn30/*/grid_task.100000.dat")
+d0 = glob.glob("../data/niche_construction_experiments/2circles_notXorn0/*/grid_task.100000.dat")
+d14 = glob.glob("../data/niche_construction_experiments/2circles_notXorn14/*/grid_task.100000.dat")
+d30 = glob.glob("../data/niche_construction_experiments/2circles_notXorn30/*/grid_task.100000.dat")
 
 grid_0 = avsp.agg_grid(avsp.load_grid_data(d0))
 grid_14 = avsp.agg_grid(avsp.load_grid_data(d14))
@@ -74,5 +74,5 @@ ax3.add_patch(circle1)
 ax3.add_patch(circle2)
 
 #plt.show()
-plt.savefig("nicheConstruction.eps")
+plt.savefig("../figs/nicheConstruction.eps")
 

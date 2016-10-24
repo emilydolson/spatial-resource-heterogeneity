@@ -1,14 +1,5 @@
-###################################################
-### code chunk number 1: test.Rnw:81-166
-###################################################
-#Samuel Perez, Audra Chaput, and myself collected these data to study the impact of
-#spatial heterogeneity on phenotypic diversity as part of the BEACON class last semester.
-
-#Each row provides statistics about an entire Avida population at a given time point 
-#within a run of Avida. There are 30 replicates per condition and 100 time points per replicate.
-
-#These data were collected as part of an experiment. We were applying spatial heterogeneity
-#conditions to observe the effect.
+#Each row of the dataset provides statistics about an entire Avida population at a given time point 
+#within a run of Avida.
 
 #Replicate samples were collected by re-running Avida with the same configuration file and
 # a different random seed.
@@ -21,7 +12,7 @@ library(bbmle)
 library(MASS)
 library(arm)
 
-#Read in data
+######## Read in data ###################################################
 dirs <- list.dirs(path = "../data/randomized_entropy", recursive=FALSE)
 
 #Make sure that files from same replicate get merged appropriately
@@ -81,39 +72,6 @@ data$resources <- as.numeric(data$resources)
 #Take subset of data from end of run s
 endPoints <- subset(data, (data$Updates==100000))
 
-
-###################################################
-### code chunk number 2: test.Rnw:170-187
-###################################################
-ent_div_lm <- lm(ShannonDiversityPhenotype ~ ent, data=endPoints)
-plot(ent_div_lm) #Woah, there's a definite outlier! Upon further investigation, it turns out that everything in that environment died.
-#summary(ent_div_lm)
-
-#try excluding outlier
-ent_div_lm_outliers <- lm(ShannonDiversityPhenotype ~ ent, data=endPoints, subset=c(endPoints$seed!=50047))
-plot(ent_div_lm_outliers) #Look okay, although there might be a slight curve in the residuals 
-#summary(ent_div_lm_outliers) #didn't change substantially from original
-                        #since there's a clear reason to exclude this point, it will be exclude from here on
-hist(resid(ent_div_lm_outliers)) #looks good
-acf(resid(ent_div_lm_outliers)) #looks good
-qqnorm(resid(ent_div_lm_outliers)) #looks good
-plot(endPoints$ShannonDiversityPhenotype[endPoints$seed!=50047], fitted(ent_div_lm_outliers))
-abline(a=0,b=1) #There is a ton of scatter around this line, but that's okay. The goal is not to have the best
-#prediction possible. It is to understand the effect of spatial heterogeneity on population diversity
-
-#confint(ent_div_lm_outliers)
-
-
-###################################################
-### code chunk number 3: test.Rnw:207-209
-###################################################
-plot(endPoints$ShannonDiversityPhenotype[endPoints$seed!=50047], fitted(ent_div_lm_outliers), xlab = "Standardized Phenotypic Shannon Diversity", ylab="Predicted Diversity")
-abline(a=0,b=1)
-
-
-###################################################
-### code chunk number 4: test.Rnw:212-413
-###################################################
 #Get diversities from before equals evolved
 endPoints$preEQUdiv <- vector(mode="numeric", length=length(endPoints$seed))
 for (s in unique(data$seed)){
@@ -132,7 +90,17 @@ for (s in unique(data$seed)){
   }
 }
 
-#Start out by assessing co-linearity between potential predictors.
+# We're about to make a bunch of models with interactions, so let's create centered versions of variables so that the interaction
+# terms are meaningful:
+
+endPoints$scaled_preEQUdiv <- scale(endPoints$preEQUdiv, scale = FALSE)
+endPoints$scaled_overlap <- scale(endPoints$overlap, scale = FALSE)
+endPoints$scaled_skew <- scale(endPoints$skew, scale = FALSE)
+endPoints$scaled_kurtosis <- scale(endPoints$kurtosis, scale = FALSE)
+endPoints$scaled_variance <- scale(endPoints$variance, scale = FALSE)
+endPoints$scaled_ent <- scale(endPoints$ent, scale = FALSE)
+
+endPoints$equ_evolved <- as.numeric(endPoints$EQU>0)
 
 #Ian's ConditionNumber function
 ConditionNumber <-function(mod){
@@ -142,75 +110,126 @@ ConditionNumber <-function(mod){
   sqrt(eigen.x$val[1]/eigen.x$val) # condition numbers
 }
 
+####### Analyze effect of entropy on diversity #################################################
+
+ent_div_lm <- lm(ShannonDiversityPhenotype ~ ent, data=endPoints)
+plot(ent_div_lm) #Woah, there's a definite outlier! Upon further investigation, it turns out that everything in that environment died.
+#summary(ent_div_lm)
+
+#try excluding outlier
+ent_div_lm_outliers <- lm(ShannonDiversityPhenotype ~ ent, data=endPoints, subset=c(endPoints$seed!=50047))
+plot(ent_div_lm_outliers) #Look okay, although there might be a slight curve in the residuals 
+#summary(ent_div_lm_outliers) #didn't change substantially from original
+                        #since there's a clear reason to exclude this point, it will be exclude from here on
+hist(resid(ent_div_lm_outliers)) #looks good
+acf(resid(ent_div_lm_outliers)) #looks good
+qqnorm(resid(ent_div_lm_outliers)) #looks good
+plot(endPoints$ShannonDiversityPhenotype[endPoints$seed!=50047], fitted(ent_div_lm_outliers))
+abline(a=0,b=1) #There is a ton of scatter around this line, but that's okay. The goal is not to have the best
+#prediction possible. It is to understand the effect of spatial heterogeneity on population diversity
+
+confint(ent_div_lm_outliers)
+
+plot(endPoints$ShannonDiversityPhenotype[endPoints$seed!=50047], fitted(ent_div_lm_outliers), xlab = "Standardized Phenotypic Shannon Diversity", ylab="Predicted Diversity")
+abline(a=0,b=1)
+
+# The outlier doesn't seem to have a huge effect, so we might as well leave it in
+# There's another problem, though - populations that evolved EQU are capable of having higher diversity than those that didn't
+# This will create problems when we're attempting to determine how factors impact evolution of EQU. So let's look at data from
+# before EQU evolved.
+
+# It turns out the effects are all roughly the same anyway. Here's the final model used in the paper:
+
+final_div_lm <- lm(preEQUdiv ~ ent, data=endPoints)
+plot(final_div_lm)
+plot(endPoints$ent, resid(final_div_lm))
+qqnorm(resid(final_div_lm))
+summary(final_div_lm)
+confint(final_div_lm)
+
+setEPS()
+cairo_ps("../figs/DiversityVsEntropy.eps", width = 4.2, height= 4.0)
+showtext.begin()
+ggplot(data=endPoints, aes(x=ent, y=preEQUdiv)) + 
+  geom_point() + theme_classic(base_size = 12, base_family = "Arial") + 
+  theme(axis.line.x = element_line(colour = "black"), axis.line.y = element_line(colour = "black"), legend.position="none") + 
+  scale_x_continuous("Environmental Shannon entropy") + 
+  scale_y_continuous("Phenotypic Shannon diversity") + geom_smooth(method=lm)
+dev.off()
+
+######### Predicting EQU evolution ###############################################################################
+
+#Let's start with some diagnostics to make sure we're making valid models.
+
 #Since we only care about predictors here, it's okay to just use a standard lm
-diagnostic_lm = lm(EQU>0 ~ preEQUdiv+overlap+skew+kurtosis+variance, data=endPoints)
-#ConditionNumber(diagnostic_lm) #Not too bad
-#vif(diagnostic_lm) #Well, those are some pretty big numbers... And this is all centered, too
-#cov2cor(vcov(diagnostic_lm)) #looks like skew and kurtosis and mean (overlap) and variance are super colinear
+diagnostic_lm = lm(EQU>0 ~ scaled_preEQUdiv+scaled_overlap+scaled_skew+scaled_kurtosis+scaled_variance, data=endPoints)
+ConditionNumber(diagnostic_lm) #Not too bad
+vif(diagnostic_lm) #Well, those are some pretty big numbers... And this is all centered, too
+cov2cor(vcov(diagnostic_lm)) #looks like skew and kurtosis and mean (overlap) and variance are super colinear
 
 #Let's just try mean and skew
-diagnostic_lm = lm(EQU>0 ~ preEQUdiv+overlap+skew, data=endPoints)
-#ConditionNumber(diagnostic_lm) #Beautiful
-#vif(diagnostic_lm) #Much much better
-#cov2cor(vcov(diagnostic_lm)) #looks good
+diagnostic_lm = lm(EQU>0 ~ scaled_preEQUdiv+scaled_overlap+scaled_skew, data=endPoints)
+ConditionNumber(diagnostic_lm) #Beautiful
+vif(diagnostic_lm) #Much much better
+cov2cor(vcov(diagnostic_lm)) #looks good
 
 #How about variance and kurtosis?
-diagnostic_lm = lm(EQU>0 ~ preEQUdiv+kurtosis+variance, data=endPoints)
-#ConditionNumber(diagnostic_lm) #great
-#vif(diagnostic_lm) #also great
-#cov2cor(vcov(diagnostic_lm))
+diagnostic_lm = lm(EQU>0 ~ scaled_preEQUdiv+scaled_kurtosis+scaled_variance, data=endPoints)
+ConditionNumber(diagnostic_lm) #great
+vif(diagnostic_lm) #also great
+cov2cor(vcov(diagnostic_lm))
 
 #variance and skew?
-diagnostic_lm = lm(EQU>0 ~ preEQUdiv+variance+skew, data=endPoints)
-#ConditionNumber(diagnostic_lm) 
-#vif(diagnostic_lm) 
-#cov2cor(vcov(diagnostic_lm)) #looks good
+diagnostic_lm = lm(EQU>0 ~ scaled_preEQUdiv+scaled_variance+scaled_skew, data=endPoints)
+ConditionNumber(diagnostic_lm) 
+vif(diagnostic_lm) 
+cov2cor(vcov(diagnostic_lm)) #looks good
 
 #Mean and kurtosis?
-diagnostic_lm = lm(EQU>0 ~ preEQUdiv+overlap+kurtosis, data=endPoints)
-#ConditionNumber(diagnostic_lm) 
-#vif(diagnostic_lm) 
-#cov2cor(vcov(diagnostic_lm)) #looks good
+diagnostic_lm = lm(EQU>0 ~ scaled_preEQUdiv+scaled_overlap+scaled_kurtosis, data=endPoints)
+ConditionNumber(diagnostic_lm) 
+vif(diagnostic_lm) 
+cov2cor(vcov(diagnostic_lm)) #looks good
 
 #Okay, now we're going to add some interactions
-diagnostic_lm = lm(EQU>0 ~ (preEQUdiv+overlap+skew)^3, data=endPoints)
-#ConditionNumber(diagnostic_lm) 
-#vif(diagnostic_lm) 
-#cov2cor(vcov(diagnostic_lm))
+diagnostic_lm = lm(EQU>0 ~ (scaled_preEQUdiv+scaled_overlap+scaled_skew)^3, data=endPoints)
+ConditionNumber(diagnostic_lm) 
+vif(diagnostic_lm) 
+cov2cor(vcov(diagnostic_lm))
 #even that is okay. Seems like we have eliminated to colinearity problem
 
 # Negative log Likelihood calculator (Support function) from Ian's script
 N <- 1
 
 logistic.reg.fn.1 <- function(a, b1, b2, b3, b4) {
-  p.pred <- plogis(a + b1*endPoints$preEQUdiv + b2*endPoints$overlap + b3*endPoints$skew +  b4*endPoints$skew*endPoints$overlap)
+  p.pred <- plogis(a + b1*endPoints$scaled_preEQUdiv + b2*endPoints$scaled_overlap + b3*endPoints$scaled_skew +  b4*endPoints$scaled_skew*endPoints$scaled_overlap)
 	-sum(dbinom((endPoints$EQU>0), size=N, prob=p.pred, log=T )) # We can plop this right into our NLL calculator.
 }
 
 #Let's try inluding interactions with diversity
 logistic.reg.fn.2 <- function(a, b1, b2, b3, b4, b5, b6) {
-  p.pred <- plogis(a + b1*endPoints$preEQUdiv + b2*endPoints$overlap + b3*endPoints$skew +  b4*endPoints$skew*endPoints$overlap + b5*endPoints$preEQUdiv*endPoints$overlap + b6*endPoints$preEQUdiv*endPoints$overlap)
+  p.pred <- plogis(a + b1*endPoints$scaled_preEQUdiv + b2*endPoints$scaled_overlap + b3*endPoints$scaled_skew +  b4*endPoints$scaled_skew*endPoints$scaled_overlap + b5*endPoints$scaled_preEQUdiv*endPoints$scaled_overlap + b6*endPoints$scaled_preEQUdiv*endPoints$scaled_overlap)
   -sum(dbinom((endPoints$EQU>0), size=N, prob=p.pred, log=T )) # We can plop this right into our NLL calculator.
 }
 
 logistic.reg.fn.3 <- function(a, b1, b2, b3, b4) {
-  p.pred <- plogis(a + b1*endPoints$preEQUdiv + b2*endPoints$variance + b3*endPoints$skew +  b4*endPoints$skew*endPoints$variance)
+  p.pred <- plogis(a + b1*endPoints$scaled_preEQUdiv + b2*endPoints$scaled_variance + b3*endPoints$scaled_skew +  b4*endPoints$scaled_skew*endPoints$scaled_variance)
   -sum(dbinom((endPoints$EQU>0), size=N, prob=p.pred, log=T )) # We can plop this right into our NLL calculator.
 }
 
 logistic.reg.fn.4 <- function(a, b1, b2, b3, b4) {
-  p.pred <- plogis(a + b1*endPoints$preEQUdiv + b2*endPoints$overlap + b3*endPoints$kurtosis +  b4*endPoints$kurtosis*endPoints$overlap)
+  p.pred <- plogis(a + b1*endPoints$scaled_preEQUdiv + b2*endPoints$scaled_overlap + b3*endPoints$scaled_kurtosis +  b4*endPoints$scaled_kurtosis*endPoints$scaled_overlap)
   -sum(dbinom((endPoints$EQU>0), size=N, prob=p.pred, log=T )) # We can plop this right into our NLL calculator.
 }
 
 logistic.reg.fn.5 <- function(a, b1, b2, b3, b4) {
-  p.pred <- plogis(a + b1*endPoints$preEQUdiv + b2*endPoints$variance + b3*endPoints$kurtosis +  b4*endPoints$variance*endPoints$kurtosis)
+  p.pred <- plogis(a + b1*endPoints$scaled_preEQUdiv + b2*endPoints$scaled_variance + b3*endPoints$scaled_kurtosis +  b4*endPoints$scaled_variance*endPoints$scaled_kurtosis)
   -sum(dbinom((endPoints$EQU>0), size=N, prob=p.pred, log=T )) # We can plop this right into our NLL calculator.
 }
 
 #With no interaction?
 logistic.reg.fn.6 <- function(a, b1, b2, b3) {
-  p.pred <- plogis(a + b1*endPoints$preEQUdiv + b2*endPoints$variance + b3*endPoints$kurtosis)
+  p.pred <- plogis(a + b1*endPoints$scaled_preEQUdiv + b2*endPoints$scaled_variance + b3*endPoints$scaled_kurtosis)
   -sum(dbinom((endPoints$EQU>0), size=N, prob=p.pred, log=T )) # We can plop this right into our NLL calculator.
 }
 
@@ -231,10 +250,6 @@ profile.log.reg3 <- profile(log.reg.optim.function1)
 plot(profile.log.regfunction1) #Still the same. Seems solid.
 #summary(log.reg.optim.function1)
 
-#Now lets do this with glm to make sure results are the same
-meankurtosis.glm <- glm(EQU>0 ~ preEQUdiv+(overlap+skew)^2, family=binomial(link="logit"), data=endPoints)
-#summary(meankurtosis.glm) #Still the same! Great! Also the residual deviance looks okay.
-#vcov(meankurtosis.glm)
 
 #Try it with the diversity interaction
 #log.reg.optim.function2 <- mle2(logistic.reg.fn.2, start=list(a=0.2,b1=1.7, b2=1.4, b3=.99, b4=.39, b5=.4, b6=.7))
@@ -248,7 +263,7 @@ meankurtosis.glm <- glm(EQU>0 ~ preEQUdiv+(overlap+skew)^2, family=binomial(link
 #After playing with different starting values and optimizers, there seems to be very little confidence attainable about interactions with diversity. This model will be ommitted.
 #plot(profile.log.regfunction2)
 #summary(log.reg.optim.function2)
-#(commented out so my paper compiles)
+#(commented out because some of these sometimes don't converge)
 
 #Okay, let's try the other mean, skew, variance, and kurtosis models:
 log.reg.optim.function3 <- mle2(logistic.reg.fn.3, start=list(a=1,b1=1, b2=1, b3=1, b4=1))
@@ -271,7 +286,8 @@ profile.log.regfunction6 <- profile(log.reg.optim.function6)
 plot(profile.log.regfunction5) #Looking good.
 #summary(log.reg.optim.function5)
 
-#Now use AIC to compare:
+#Now use AIC to compare: (note: these values are from the preliminary data that were used for model selection - 
+# they may be slightly different with the final data-set)
 #AIC(log.reg.optim.function1) #479.75 -> delta = 0
 #AIC(log.reg.optim.function3) #494.44 -> delta = 16.69
 #AIC(log.reg.optim.function4) #481.12 -> delta = 1.37
@@ -292,19 +308,23 @@ AkaikeWeight <- function(delta){
 # 3.196805e-06
 #There are two models with non-negligible support: 1 (overlap and skew) and 4 (overlap and kurtosis).
 
-#Let's make sure that the built-in glm agrees:
-meanskew.glm <- glm(EQU>0 ~ preEQUdiv+(overlap+kurtosis)^2, family=binomial(link="logit"), data=endPoints)
-#summary(meanskew.glm) #Looks good!
+#Now lets do this with glm to make sure results are the same
+meankurtosis.glm <- glm(EQU>0 ~ scaled_preEQUdiv+(scaled_overlap+scaled_kurtosis)^2, family=binomial(link="logit"), data=endPoints)
+summary(meankurtosis.glm) #Still the same! Great! Also the residual deviance looks okay.
+vcov(meankurtosis.glm)
+
+meanskew.glm <- glm(equ_evolved ~ scaled_preEQUdiv*scaled_overlap*scaled_skew, family=binomial(link="logit"), data=subset(endPoints, endPoints$seed < 50250))
+summary(meanskew.glm) #Looks good!
 #These results are qualitatively similar, but not identical. However, there isn't a logical way to average them together, given that they contain such different variables and contain variables that are colinear with each other.
-#vcov(meanskew.glm)
+vcov(meanskew.glm)
 
 #McFadden's pseudo R-squared:
-#1-meankurtosis.glm$deviance/meankurtosis.glm$null.deviance
-#1-meanskew.glm$deviance/meanskew.glm$null.deviance #They're about the same ~.26
+1-meankurtosis.glm$deviance/meankurtosis.glm$null.deviance
+1-meanskew.glm$deviance/meanskew.glm$null.deviance # This one is a little better (~.15 vs .11)
 
 #Make model with entropy instead of diversity to try to untangle the effect of heterogeneity on evolvability from the effect of diversity:
 logistic.reg.fn.7 <- function(a, b1, b2, b3, b4) {
-  p.pred <- plogis(a + b1*endPoints$ent + b2*endPoints$overlap + b3*endPoints$kurtosis + b4*endPoints$kurtosis*endPoints$overlap)
+  p.pred <- plogis(a + b1*endPoints$scaled_ent + b2*endPoints$scaled_overlap + b3*endPoints$scaled_kurtosis + b4*endPoints$scaled_kurtosis*endPoints$scaled_overlap)
   -sum(dbinom((endPoints$EQU>0), size=N, prob=p.pred, log=T )) # We can plop this right into our NLL calculator.
 }
 
@@ -312,38 +332,27 @@ log.reg.optim.function7 <- mle2(logistic.reg.fn.7, start=list(a=1,b1=1, b2=1, b3
 profile.log.regfunction7 <- profile(log.reg.optim.function7)
 plot(profile.log.regfunction7) #seems fine
 #summary(log.reg.optim.function4)
-ent.glm <- glm(EQU>0 ~ ent+(overlap+kurtosis)^2, family=binomial(link="logit"), data=endPoints)
-#summary(ent.glm)
-#AIC(ent.glm) #599.71 - way worse
+ent.glm <- glm(EQU>0 ~ ent+(overlap+skew)^2, family=binomial(link="logit"), data=endPoints)
+summary(ent.glm)
+AIC(ent.glm)
 
-
-###################################################
-### code chunk number 5: test.Rnw:445-448
-###################################################
+# Let's take a look at the models
 plot(endPoints$ShannonDiversityPhenotype, endPoints$EQU>0, xlab="Phenotypic Shannon Diversity", ylab="Equals evolved?")
-curve( plogis(coef(meanskew.glm)[1] + coef(meanskew.glm)[2]*x), -3, 4, ylab= "Prob of evolving equals", lwd=5,add=T, col="blue")
-curve( plogis(coef(meankurtosis.glm)[1] + coef(meankurtosis.glm)[2]*x), -3, 4, ylab= "Prob of evolving equals", lwd=5,add=T, col="red") 
-
-
-###################################################
-### code chunk number 6: test.Rnw:455-456
-###################################################
-coefplot(meanskew.glm, varnames=c("intercept", "diversity", "mean", "skew", "mean*skew"), mar=c(0,5,5,0))
-
-
-###################################################
-### code chunk number 7: test.Rnw:461-462
-###################################################
+curve( plogis(coef(meanskew.glm)[1] + coef(meanskew.glm)[2]*x), -3, 6, ylab= "Prob of evolving equals", lwd=5,add=T, col="blue")
+curve( plogis(coef(meankurtosis.glm)[1] + coef(meankurtosis.glm)[2]*x), -3, 6, ylab= "Prob of evolving equals", lwd=5,add=T, col="red") 
+coefplot(meanskew.glm, varnames=c("intercept", "diversity", "mean", "skew"), mar=c(0,5,5,0))
 coefplot(meankurtosis.glm, varnames=c("intercept", "diversity", "mean", "kurtosis", "mean*kurtosis"), mar=c(0,5,5,0))
 
-endPoints$equ_evolved <- as.numeric(endPoints$EQU>0)
+# Since the fit seems pretty equivalent and skew is easier to understand than kurtosis, we'll go with skew.
 
-setEPS()
-cairo_ps("../figs/DiversityVsEntropy.eps", width = 4.2, height= 4.0)
-showtext.begin()
-ggplot(data=endPoints, aes(x=ent, y=preEQUdiv)) + 
-  geom_point() + theme_classic(base_size = 12, base_family = "Arial") + 
-  theme(axis.line.x = element_line(colour = "black"), axis.line.y = element_line(colour = "black"), legend.position="none") + 
-  scale_x_continuous("Environmental Shannon Entropy") + 
-  scale_y_continuous("Phenotypic Shannon Diversity") + geom_smooth(method=lm)
-dev.off()
+# Make sure that overlap*skew is actually capturing all of the information that entropy captures.
+
+ent_pred_lm <- lm(ent ~ overlap*skew, data=endPoints)
+summary(ent_pred_lm)
+plot(ent_pred_lm)
+qqnorm(resid(ent_pred_lm))
+plot(endPoints$ent, resid(ent_pred_lm))
+confint(ent_pred_lm)
+coefplot(ent_pred_lm)
+
+#Looks like it is!
