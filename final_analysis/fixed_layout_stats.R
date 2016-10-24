@@ -152,7 +152,7 @@ ggplot() + geom_line(data=entline, color="blue", aes(x=dists, y=ents)) +
   geom_boxplot(data=end_points, aes(x=radius, y=preEQUdiv, fill="red", group=condition)) + 
   theme_classic(base_size = 12, base_family = "Arial") + 
   theme(axis.line.x = element_line(colour = "black"), axis.line.y = element_line(colour = "black"), legend.position="none") + 
-  scale_x_continuous("Patch Radius", breaks = radii) + scale_y_continuous("Phenotypic Shannon Diversity") + 
+  scale_x_continuous("Patch radius", breaks = radii) + scale_y_continuous("Phenotypic Shannon diversity") + 
   geom_text(aes(label=unlist(lab.txt), x = radii, y = labheights))
 dev.off()
 
@@ -204,12 +204,12 @@ for(i in seq(res)){
 
 # Make figure
 setEPS()
-cairo_ps("../figs/RadiusEvolutionaryPotential.eps", width = 7.14, height= 4.69)
+cairo_pdf("../figs/RadiusEvolutionaryPotential.pdf", width = 7.14, height= 4.69)
 showtext.begin()
 ggplot() + geom_bar(data=end_points, stat="identity", aes(x=radius, y=EQU_evolved/30, group=condition)) + 
   theme_classic(base_size = 12, base_family = "Arial") + 
   theme(axis.line.x = element_line(color = "black"),axis.line.y = element_line(color = "black"), legend.position="none") + 
-  scale_x_continuous("Patch Radius", breaks = radii) + scale_y_continuous("Proportion of runs in which EQU Evolved") + 
+  scale_x_continuous("Patch radius", breaks = radii) + scale_y_continuous("Proportion of runs in which EQU evolved") + 
   geom_errorbar(aes(x=radii, ymin=equ_props-err_bars, ymax=equ_props+err_bars)) + 
   geom_text(aes(label=unlist(lab.txt), x = radii, y=equ_props+err_bars+.05))
 dev.off()
@@ -349,8 +349,8 @@ ggplot() + geom_line(data=entline, color="blue", aes(x=dists, y=ents)) +
   geom_boxplot(data=end_points, aes(x=distance, y=preEQUdiv, fill="red", group=condition)) + 
   theme_classic(base_size = 12, base_family = "Arial") + 
   theme(axis.line.x = element_line(colour = "black"), axis.line.y = element_line(colour = "black"), legend.position="none") + 
-  scale_x_continuous("Inter-patch Distance", breaks = distances) + 
-  scale_y_continuous("Phenotypic Shannon Diversity") + 
+  scale_x_continuous("Inter-patch distance", breaks = distances) + 
+  scale_y_continuous("Phenotypic Shannon diversity") + 
   geom_text(aes(label=unlist(lab.txt), x = distances, y = labheights))
 dev.off()
 
@@ -401,12 +401,12 @@ for(i in seq(res)){
 # Make figure
 
 setEPS()
-cairo_ps("../figs/DistanceEvolutionaryPotential.eps", width = 7.14, height= 4.69)
+cairo_pdf("../figs/DistanceEvolutionaryPotential.pdf", width = 7.14, height= 4.69)
 showtext.begin()
 ggplot() + geom_bar(data=end_points, stat="identity", aes(x=distance, y=EQU_evolved/30, group=condition)) + 
   theme_classic(base_size = 12, base_family = "Arial") + 
   theme(axis.line.x = element_line(colour = "black"), axis.line.y = element_line(colour = "black"), legend.position="none") + 
-  scale_x_continuous("Inter-patch Distance", breaks = distances) + 
+  scale_x_continuous("Inter-patch distance", breaks = distances) + 
   scale_y_continuous("Proportion of runs in which EQU Evolved")  + 
   geom_errorbar(aes(x=distances, ymin=equ_props-err_bars, ymax=equ_props+err_bars))  + 
   geom_text(aes(label=unlist(lab.txt), x = distances, y=equ_props+err_bars+.05))
@@ -456,13 +456,13 @@ labels <- paste0(as.character(distances), "\n(", as.character(sizes),")")
 # Make figure
 
 setEPS()
-cairo_ps("../figs/MinimalNiche.eps", width = 7.14, height= 4.69)
+cairo_pdf("../figs/MinimalNiche.pdf", width = 7.14, height= 4.69)
 showtext.begin()
 
 ggplot() + geom_bar(data=data, stat="identity", aes(x=distance, y=EQU_Evolved/30, group=distance)) + 
   theme_classic(base_size = 12, base_family = "Arial") + 
   theme(axis.line.x = element_line(colour = "black"), axis.line.y = element_line(colour = "black"), legend.position="none") + 
-  scale_x_continuous("Inter-patch Distance", breaks = distances, labels=labels) + 
+  scale_x_continuous("Inter-patch distance", breaks = distances, labels=labels) + 
   scale_y_continuous("Proportion of runs in which optimal phenotype evolved") + 
   geom_errorbar(aes(x=distances, ymin=equ_props-err_bars, ymax=equ_props+err_bars))
 
